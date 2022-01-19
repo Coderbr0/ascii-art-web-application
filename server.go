@@ -3,29 +3,44 @@ package main
 import (
 	"fmt"
 	"log"
-    "net/http"
+	"net/http"
 )
 
 func main() {
+	fileServer := http.FileServer(http.Dir("./static"))
+	http.Handle("/", fileServer)
+	http.HandleFunc("/form", formHandler)
 	http.HandleFunc("/hello", helloHandler)
 
-	fmt.Printf("Starting server at port 8080\n\t ----------------- \nhttp://localhost:8080/hello") // https://blog.logrocket.com/creating-a-web-server-with-golang/
+	fmt.Printf("Starting server at port 8080\n") // https://blog.logrocket.com/creating-a-web-server-with-golang/
 	if err := http.ListenAndServe(":8080", nil); err != nil {
-        log.Fatal(err)
-    }
+		log.Fatal(err)
+	}
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
-    if r.URL.Path != "/hello" {
-        http.Error(w, "404 not found.", http.StatusNotFound)
+	if r.URL.Path != "/hello" {
+		http.Error(w, "404 not found.", http.StatusNotFound)
+		return
+	}
+
+	if r.Method != "GET" {
+		http.Error(w, "Method is not supported.", http.StatusNotFound)
+		return
+	}
+
+	fmt.Fprintf(w, "Hello Karolis!")
+}
+
+func formHandler(w http.ResponseWriter, r *http.Request) {
+    if err := r.ParseForm(); err != nil {
+        fmt.Fprintf(w, "ParseForm() err: %v", err)
         return
     }
+    fmt.Fprintf(w, "POST request successful")
+    name := r.FormValue("name")
+    address := r.FormValue("address")
 
-    if r.Method != "GET" {
-        http.Error(w, "Method is not supported.", http.StatusNotFound)
-        return
-    }
-
-
-    fmt.Fprintf(w, "Hello Karolis!")
+    fmt.Fprintf(w, "Name = %s\n", name)
+    fmt.Fprintf(w, "Address = %s\n", address)
 }

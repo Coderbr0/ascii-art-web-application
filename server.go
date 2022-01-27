@@ -18,7 +18,7 @@ func main() {
 
 type Page struct {
 	Title string
-	Body  []byte
+	Body []byte
 }
 
 func (p *Page) save() error {

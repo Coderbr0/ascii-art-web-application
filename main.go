@@ -16,15 +16,18 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-type Page struct {
+type Page struct { // The Page struct describes how page data will be stored in memory.
 	Title string
 	Body []byte
 }
 
-func (p *Page) save() error {
+func (p *Page) save() error {	// But what about persistent storage? We can address that by creating a save method on Page; 
+	// This method's signature reads: "This is a method named save that takes as its receiver p, a pointer to Page. 
+	// It takes no parameters, and returns a value of type error." 
 	filename := p.Title + ".txt"
-	return os.WriteFile(filename, p.Body, 0600)
-}
+	return os.WriteFile(filename, p.Body, 0600) //  If all goes well, Page.save() will return nil (the zero-value for pointers, interfaces, and some other types). 
+} // The octal integer literal 0600, passed as the third parameter to WriteFile, 
+// indicates that the file should be created with read-write permissions for the current user only.
 
 func loadPage(title string) (*Page, error) {
 	filename := title + ".txt"
@@ -55,7 +58,7 @@ func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	body := r.FormValue("body")
 	p := &Page{Title: title, Body: []byte(body)}
-	err := p.save()
+	err := p.save() // If all goes well, Page.save() will return nil (the zero-value for pointers, interfaces, and some other types).
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

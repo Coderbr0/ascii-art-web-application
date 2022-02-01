@@ -98,4 +98,4 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 
-/*The method t.Execute executes the template, writing the generated HTML to the http.ResponseWriter.*/
+/*Having a method t.Execute, executes the template, writing the generated HTML to the http.ResponseWriter.*/

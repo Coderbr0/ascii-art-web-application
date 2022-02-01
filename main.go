@@ -27,7 +27,7 @@ func (p *Page) save() error { // But what about persistent storage? We can addre
 	// This method's signature reads: "This is a method named save that takes as its receiver p, a pointer to Page.
 	// It takes no parameters, and returns a value of type error."
 	filename := p.Title + ".txt"
-	return os.WriteFile(filename, p.Body, 0600) //  If all goes well, Page.save() will return nil (the zero-value for pointers, interfaces, and some other types).
+	return os.WriteFile(filename, p.Body, 0600) // If all goes well, Page.save() will return nil (the zero-value for pointers, interfaces, and some other types).
 }
 
 // The octal integer literal 0600, passed as the third parameter to WriteFile,

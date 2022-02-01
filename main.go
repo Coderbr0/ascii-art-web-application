@@ -74,13 +74,15 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) { // The 
 
 var templates = template.Must(template.ParseFiles("edit.html", "view.html")) // template.ParseFiles will read the contents of edit.html and view.html and
 // return a *template.Template.
+// The function template.Must is a convenience wrapper that panics when passed a non-nil error value, and otherwise returns the *Template unaltered.
+// A panic is appropriate here; if the templates can't be loaded the only sensible thing to do is exit the program.
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) { // A function to remove duplication of code from viewHandler and editHandler
 
-	err := templates.ExecuteTemplate(w, tmpl+".html", p) // The method t.Execute executes the template, writing the generated HTML to the http.ResponseWriter.
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	err := templates.ExecuteTemplate(w, tmpl+".html", p) // renderTemplate calls ParseFiles every time a page is rendered.
+	if err != nil {                                      // A better approach would be to call ParseFiles once at program initialization,
+		http.Error(w, err.Error(), http.StatusInternalServerError) // parsing all templates into a single *Template.
+	} // Then we can use the ExecuteTemplate method to render a specific template.
 }
 
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$") // MustCompile is distinct from Compile in that it will panic if the expression compilation
@@ -95,3 +97,5 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 		fn(w, r, m[2])
 	}
 }
+
+/*The method t.Execute executes the template, writing the generated HTML to the http.ResponseWriter.*/
